@@ -14,6 +14,7 @@
 #include "unit\TestMathUtils.mqh"
 #include "unit\TestTimeUtils.mqh"
 #include "unit\TestNormalizationUtils.mqh"
+#include "unit\TestMarketStateManager.mqh"
 
 //--- Input-parametrar
 input bool RUN_ALL_TESTS = true;          // Kör alla tester
@@ -81,6 +82,9 @@ void RunAllTestSuites() {
 
     // Kör NormalizationUtils-tester
     RunNormalizationUtilsTests();
+
+    // Kör MarketStateManager-tester (FAS 1)
+    RunMarketStateManagerTests();
 
     // Lägg till fler testsviter här efterhand:
     // RunStructuredLoggerTests();

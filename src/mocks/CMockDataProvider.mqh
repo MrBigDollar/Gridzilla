@@ -39,6 +39,12 @@ private:
     double           m_bb_middle[];
     int              m_indicator_count;
 
+    //--- Period-specifika EMA-värden
+    double           m_ema20;
+    double           m_ema50;
+    double           m_ema200;
+    bool             m_use_period_ema;
+
     //--- Kontoinformation
     double           m_balance;
     double           m_equity;
@@ -90,6 +96,12 @@ public:
         ArrayResize(m_bb_upper, m_max_bars);
         ArrayResize(m_bb_lower, m_max_bars);
         ArrayResize(m_bb_middle, m_max_bars);
+
+        // Period-specifika EMA
+        m_ema20 = 0.0;
+        m_ema50 = 0.0;
+        m_ema200 = 0.0;
+        m_use_period_ema = false;
 
         // Konto
         m_balance = 10000.0;
@@ -211,6 +223,18 @@ public:
     }
 
     //+------------------------------------------------------------------+
+    //| SetEMAByPeriod - Sätt specifika EMA-värden per period             |
+    //|                                                                   |
+    //| Använd för att simulera EMA alignment (bullish/bearish)           |
+    //+------------------------------------------------------------------+
+    void SetEMAByPeriod(double ema20, double ema50, double ema200) {
+        m_ema20 = ema20;
+        m_ema50 = ema50;
+        m_ema200 = ema200;
+        m_use_period_ema = true;
+    }
+
+    //+------------------------------------------------------------------+
     //| SetBollingerBands - Sätt BB-värden                                |
     //+------------------------------------------------------------------+
     void SetBollingerBands(const double &upper[], const double &middle[],
@@ -305,6 +329,12 @@ public:
 
     virtual double GetEMA(ENUM_TIMEFRAMES tf, int period,
                           ENUM_APPLIED_PRICE applied_price, int shift) override {
+        // Om period-specifika EMA är satta, använd dem (endast för shift=0)
+        if (m_use_period_ema && shift == 0) {
+            if (period <= 20) return m_ema20;
+            if (period <= 50) return m_ema50;
+            return m_ema200;
+        }
         if (shift < 0 || shift >= m_indicator_count) return m_bid;
         return m_ema_values[shift];
     }
