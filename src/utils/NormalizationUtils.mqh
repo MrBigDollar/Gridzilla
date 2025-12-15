@@ -191,22 +191,22 @@ public:
     //| ranges: Referens till ONNXInputRanges                             |
     //| Returnerar true om alla värden är inom giltiga intervall          |
     //+------------------------------------------------------------------+
-    static bool ValidateONNXInputArray(const float &input[], const ONNXInputRanges &ranges) {
-        if (ArraySize(input) != 12) return false;
+    static bool ValidateONNXInputArray(const float &arr[], const ONNXInputRanges &ranges) {
+        if (ArraySize(arr) != 12) return false;
 
         // Validera varje index mot dess intervall
-        if (!IsInValidRange(input[0], ranges.trend_strength_min, ranges.trend_strength_max)) return false;
-        if (!IsInValidRange(input[1], ranges.slope_min, ranges.slope_max)) return false;
-        if (!IsInValidRange(input[2], ranges.curvature_min, ranges.curvature_max)) return false;
-        if (!IsInValidRange(input[3], ranges.volatility_level_min, ranges.volatility_level_max)) return false;
-        if (!IsInValidRange(input[4], ranges.volatility_change_min, ranges.volatility_change_max)) return false;
-        if (!IsInValidRange(input[5], ranges.mean_reversion_min, ranges.mean_reversion_max)) return false;
-        if (!IsInValidRange(input[6], ranges.spread_zscore_min, ranges.spread_zscore_max)) return false;
-        if (!IsInValidRange(input[7], ranges.session_id_min, ranges.session_id_max)) return false;
-        if (!IsInValidRange(input[8], ranges.grid_active_min, ranges.grid_active_max)) return false;
-        if (!IsInValidRange(input[9], ranges.open_levels_min, ranges.open_levels_max)) return false;
-        if (!IsInValidRange(input[10], ranges.unrealized_dd_min, ranges.unrealized_dd_max)) return false;
-        if (!IsInValidRange(input[11], ranges.dd_velocity_min, ranges.dd_velocity_max)) return false;
+        if (!IsInValidRange(arr[0], ranges.trend_strength_min, ranges.trend_strength_max)) return false;
+        if (!IsInValidRange(arr[1], ranges.slope_min, ranges.slope_max)) return false;
+        if (!IsInValidRange(arr[2], ranges.curvature_min, ranges.curvature_max)) return false;
+        if (!IsInValidRange(arr[3], ranges.volatility_level_min, ranges.volatility_level_max)) return false;
+        if (!IsInValidRange(arr[4], ranges.volatility_change_min, ranges.volatility_change_max)) return false;
+        if (!IsInValidRange(arr[5], ranges.mean_reversion_min, ranges.mean_reversion_max)) return false;
+        if (!IsInValidRange(arr[6], ranges.spread_zscore_min, ranges.spread_zscore_max)) return false;
+        if (!IsInValidRange(arr[7], ranges.session_id_min, ranges.session_id_max)) return false;
+        if (!IsInValidRange(arr[8], ranges.grid_active_min, ranges.grid_active_max)) return false;
+        if (!IsInValidRange(arr[9], ranges.open_levels_min, ranges.open_levels_max)) return false;
+        if (!IsInValidRange(arr[10], ranges.unrealized_dd_min, ranges.unrealized_dd_max)) return false;
+        if (!IsInValidRange(arr[11], ranges.dd_velocity_min, ranges.dd_velocity_max)) return false;
 
         return true;
     }
@@ -236,21 +236,21 @@ public:
     //+------------------------------------------------------------------+
     //| ClampONNXInputArray - Begränsa alla input-värden till giltiga     |
     //+------------------------------------------------------------------+
-    static void ClampONNXInputArray(float &input[], const ONNXInputRanges &ranges) {
-        if (ArraySize(input) != 12) return;
+    static void ClampONNXInputArray(float &arr[], const ONNXInputRanges &ranges) {
+        if (ArraySize(arr) != 12) return;
 
-        input[0] = (float)ClampToRange(input[0], ranges.trend_strength_min, ranges.trend_strength_max);
-        input[1] = (float)ClampToRange(input[1], ranges.slope_min, ranges.slope_max);
-        input[2] = (float)ClampToRange(input[2], ranges.curvature_min, ranges.curvature_max);
-        input[3] = (float)ClampToRange(input[3], ranges.volatility_level_min, ranges.volatility_level_max);
-        input[4] = (float)ClampToRange(input[4], ranges.volatility_change_min, ranges.volatility_change_max);
-        input[5] = (float)ClampToRange(input[5], ranges.mean_reversion_min, ranges.mean_reversion_max);
-        input[6] = (float)ClampToRange(input[6], ranges.spread_zscore_min, ranges.spread_zscore_max);
-        input[7] = (float)ClampToRange(input[7], ranges.session_id_min, ranges.session_id_max);
-        input[8] = (float)ClampToRange(input[8], ranges.grid_active_min, ranges.grid_active_max);
-        input[9] = (float)ClampToRange(input[9], ranges.open_levels_min, ranges.open_levels_max);
-        input[10] = (float)ClampToRange(input[10], ranges.unrealized_dd_min, ranges.unrealized_dd_max);
-        input[11] = (float)ClampToRange(input[11], ranges.dd_velocity_min, ranges.dd_velocity_max);
+        arr[0] = (float)ClampToRange(arr[0], ranges.trend_strength_min, ranges.trend_strength_max);
+        arr[1] = (float)ClampToRange(arr[1], ranges.slope_min, ranges.slope_max);
+        arr[2] = (float)ClampToRange(arr[2], ranges.curvature_min, ranges.curvature_max);
+        arr[3] = (float)ClampToRange(arr[3], ranges.volatility_level_min, ranges.volatility_level_max);
+        arr[4] = (float)ClampToRange(arr[4], ranges.volatility_change_min, ranges.volatility_change_max);
+        arr[5] = (float)ClampToRange(arr[5], ranges.mean_reversion_min, ranges.mean_reversion_max);
+        arr[6] = (float)ClampToRange(arr[6], ranges.spread_zscore_min, ranges.spread_zscore_max);
+        arr[7] = (float)ClampToRange(arr[7], ranges.session_id_min, ranges.session_id_max);
+        arr[8] = (float)ClampToRange(arr[8], ranges.grid_active_min, ranges.grid_active_max);
+        arr[9] = (float)ClampToRange(arr[9], ranges.open_levels_min, ranges.open_levels_max);
+        arr[10] = (float)ClampToRange(arr[10], ranges.unrealized_dd_min, ranges.unrealized_dd_max);
+        arr[11] = (float)ClampToRange(arr[11], ranges.dd_velocity_min, ranges.dd_velocity_max);
     }
 
     //+------------------------------------------------------------------+

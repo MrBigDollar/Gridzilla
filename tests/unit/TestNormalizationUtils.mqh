@@ -10,6 +10,44 @@
 #include "..\TestAssertions.mqh"
 
 //+------------------------------------------------------------------+
+//| Helper: Skapa giltig ONNX input-array                             |
+//+------------------------------------------------------------------+
+void CreateValidONNXInput(float &arr[]) {
+    ArrayResize(arr, 12);
+    arr[0] = 0.5f;   // trend_strength [0,1]
+    arr[1] = 0.0f;   // slope [-1,1]
+    arr[2] = 0.0f;   // curvature [-1,1]
+    arr[3] = 0.5f;   // volatility_level [0,1]
+    arr[4] = 0.0f;   // volatility_change [-1,1]
+    arr[5] = 0.5f;   // mean_reversion [0,1]
+    arr[6] = 0.0f;   // spread_zscore [-3,3]
+    arr[7] = 2.0f;   // session_id [0,4]
+    arr[8] = 0.0f;   // grid_active [0,1]
+    arr[9] = 4.0f;   // open_levels [0,8]
+    arr[10] = 0.0f;  // unrealized_dd [0,1]
+    arr[11] = 0.0f;  // dd_velocity [-1,1]
+}
+
+//+------------------------------------------------------------------+
+//| Helper: Skapa giltig ONNX output-array                            |
+//+------------------------------------------------------------------+
+void CreateValidONNXOutput(float &arr[]) {
+    ArrayResize(arr, 12);
+    arr[0] = 0.8f;   // allow_entry [0,1]
+    arr[1] = 1.0f;   // entry_mode [0,4]
+    arr[2] = 0.5f;   // direction [-1,1]
+    arr[3] = 1.0f;   // initial_risk [0.5,2.0]
+    arr[4] = 0.0f;   // activate_grid [0,1]
+    arr[5] = 2.0f;   // grid_structure [0,5]
+    arr[6] = 1.0f;   // grid_action [0,4]
+    arr[7] = 50.0f;  // base_spacing [20,100]
+    arr[8] = 1.2f;   // spacing_growth [1.0,1.5]
+    arr[9] = 1.5f;   // lot_growth [1.1,2.0]
+    arr[10] = 5.0f;  // max_levels [3,8]
+    arr[11] = 0.75f; // confidence [0,1]
+}
+
+//+------------------------------------------------------------------+
 //| RunNormalizationUtilsTests - Kör alla NormalizationUtils-tester   |
 //+------------------------------------------------------------------+
 void RunNormalizationUtilsTests() {
@@ -173,28 +211,32 @@ void RunNormalizationUtilsTests() {
     //=== ValidateONNXInputArray Tests ===
     BeginTest("ValidateONNXInputArray_ValidInput_ReturnsTrue");
     {
-        float input[12] = {0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 2.0f, 0.0f, 4.0f, 0.0f, 0.0f};
+        float arr[];
+        CreateValidONNXInput(arr);
         ONNXInputRanges ranges;
-        bool result = CNormalizationUtils::ValidateONNXInputArray(input, ranges);
+        bool result = CNormalizationUtils::ValidateONNXInputArray(arr, ranges);
         AssertTrue(result, "Valid input should pass validation");
     }
     EndTest();
 
     BeginTest("ValidateONNXInputArray_InvalidSize_ReturnsFalse");
     {
-        float input[10] = {0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 2.0f, 0.0f, 4.0f};
+        float arr[];
+        ArrayResize(arr, 10);
+        ArrayInitialize(arr, 0.5f);
         ONNXInputRanges ranges;
-        bool result = CNormalizationUtils::ValidateONNXInputArray(input, ranges);
+        bool result = CNormalizationUtils::ValidateONNXInputArray(arr, ranges);
         AssertFalse(result, "Wrong size should fail validation");
     }
     EndTest();
 
     BeginTest("ValidateONNXInputArray_OutOfRangeValue_ReturnsFalse");
     {
-        float input[12] = {1.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 2.0f, 0.0f, 4.0f, 0.0f, 0.0f};
-        // trend_strength = 1.5 är utanför [0,1]
+        float arr[];
+        CreateValidONNXInput(arr);
+        arr[0] = 1.5f;  // trend_strength = 1.5 är utanför [0,1]
         ONNXInputRanges ranges;
-        bool result = CNormalizationUtils::ValidateONNXInputArray(input, ranges);
+        bool result = CNormalizationUtils::ValidateONNXInputArray(arr, ranges);
         AssertFalse(result, "Out of range value should fail validation");
     }
     EndTest();
@@ -202,22 +244,42 @@ void RunNormalizationUtilsTests() {
     //=== ClampONNXInputArray Tests ===
     BeginTest("ClampONNXInputArray_OutOfRangeValues_Clamps");
     {
-        float input[12] = {1.5f, -2.0f, 2.0f, 0.5f, 0.0f, 0.5f, 5.0f, 2.0f, 0.0f, 10.0f, 0.0f, 0.0f};
-        ONNXInputRanges ranges;
-        CNormalizationUtils::ClampONNXInputArray(input, ranges);
+        float arr[];
+        ArrayResize(arr, 12);
+        arr[0] = 1.5f;   // trend_strength - should clamp to 1.0
+        arr[1] = -2.0f;  // slope - should clamp to -1.0
+        arr[2] = 2.0f;   // curvature - should clamp to 1.0
+        arr[3] = 0.5f;
+        arr[4] = 0.0f;
+        arr[5] = 0.5f;
+        arr[6] = 5.0f;   // spread_zscore - should clamp to 3.0
+        arr[7] = 2.0f;
+        arr[8] = 0.0f;
+        arr[9] = 10.0f;  // open_levels - should clamp to 8.0
+        arr[10] = 0.0f;
+        arr[11] = 0.0f;
 
-        AssertNear(1.0, input[0], 0.0001, "trend_strength clamped to 1.0");
-        AssertNear(-1.0, input[1], 0.0001, "slope clamped to -1.0");
-        AssertNear(1.0, input[2], 0.0001, "curvature clamped to 1.0");
-        AssertNear(3.0, input[6], 0.0001, "spread_zscore clamped to 3.0");
-        AssertNear(8.0, input[9], 0.0001, "open_levels clamped to 8.0");
+        ONNXInputRanges ranges;
+        CNormalizationUtils::ClampONNXInputArray(arr, ranges);
+
+        AssertNear(1.0, arr[0], 0.0001, "trend_strength clamped to 1.0");
+        AssertNear(-1.0, arr[1], 0.0001, "slope clamped to -1.0");
+        AssertNear(1.0, arr[2], 0.0001, "curvature clamped to 1.0");
+        AssertNear(3.0, arr[6], 0.0001, "spread_zscore clamped to 3.0");
+        AssertNear(8.0, arr[9], 0.0001, "open_levels clamped to 8.0");
     }
     EndTest();
 
     //=== CheckForNaN Tests ===
     BeginTest("CheckForNaN_ValidValues_ReturnsFalse");
     {
-        float values[5] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+        float values[];
+        ArrayResize(values, 5);
+        values[0] = 1.0f;
+        values[1] = 2.0f;
+        values[2] = 3.0f;
+        values[3] = 4.0f;
+        values[4] = 5.0f;
         bool result = CNormalizationUtils::CheckForNaN(values);
         AssertFalse(result, "Valid values should not contain NaN");
     }
@@ -226,19 +288,21 @@ void RunNormalizationUtilsTests() {
     //=== ValidateONNXOutputArray Tests ===
     BeginTest("ValidateONNXOutputArray_ValidOutput_ReturnsTrue");
     {
-        float output[12] = {0.8f, 1.0f, 0.5f, 1.0f, 0.0f, 2.0f, 1.0f, 50.0f, 1.2f, 1.5f, 5.0f, 0.75f};
+        float arr[];
+        CreateValidONNXOutput(arr);
         ONNXOutputRanges ranges;
-        bool result = CNormalizationUtils::ValidateONNXOutputArray(output, ranges);
+        bool result = CNormalizationUtils::ValidateONNXOutputArray(arr, ranges);
         AssertTrue(result, "Valid output should pass validation");
     }
     EndTest();
 
     BeginTest("ValidateONNXOutputArray_SpacingOutOfRange_ReturnsFalse");
     {
-        float output[12] = {0.8f, 1.0f, 0.5f, 1.0f, 0.0f, 2.0f, 1.0f, 150.0f, 1.2f, 1.5f, 5.0f, 0.75f};
-        // base_spacing = 150 är utanför [20,100]
+        float arr[];
+        CreateValidONNXOutput(arr);
+        arr[7] = 150.0f;  // base_spacing = 150 är utanför [20,100]
         ONNXOutputRanges ranges;
-        bool result = CNormalizationUtils::ValidateONNXOutputArray(output, ranges);
+        bool result = CNormalizationUtils::ValidateONNXOutputArray(arr, ranges);
         AssertFalse(result, "Spacing out of range should fail");
     }
     EndTest();
