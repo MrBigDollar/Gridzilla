@@ -26,3 +26,8 @@ Desktop.ini
 # Temporära filer
 *.tmp
 *.bak
+
+# Python
+.venv/
+__pycache__/
+*.pyc

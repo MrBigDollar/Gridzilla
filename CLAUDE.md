@@ -21,6 +21,19 @@ MQL5-kod kompileras i MetaTrader 5 IDE (MetaEditor). Det finns inget kommandorad
 # Replay-motor körs också inom MT5 Strategy Tester
 ```
 
+## Python (träningsskript)
+
+Använd ALLTID venv för Python-arbete (träning, logganalys, etc.):
+
+```bash
+# Aktivera venv
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate   # Linux/Mac
+
+# Installera dependencies
+pip install -r requirements.txt
+```
+
 ## Arkitektur
 
 ### Modulstruktur
@@ -96,11 +109,11 @@ git push origin main
 
 ### .gitignore
 
-Följande ska ignoreras:
-- `*.ex5` (kompilerade filer)
-- `logs/` (runtime-loggar)
-- `training/data/` (stora träningsdatafiler)
-- `.DS_Store`, `Thumbs.db` (OS-filer)
+Följande ignoreras (se `.gitignore` för komplett lista):
+- `*.ex5`, `*.ex4` (kompilerade MQL5-filer)
+- `logs/`, `training/data/`, `test_data/` (runtime- och träningsdata)
+- `.DS_Store`, `Thumbs.db`, `Desktop.ini` (OS-filer)
+- `.vscode/` (IDE-filer)
 
 ## Kodstandard (MQL5)
 
