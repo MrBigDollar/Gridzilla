@@ -1,0 +1,28 @@
+# Kompilerade MQL5-filer
+*.ex5
+*.ex4
+
+# MetaTrader genererade filer
+MQL5/Logs/
+MQL5/Files/
+*.log
+
+# Projektspecifikt
+logs/
+training/data/
+test_data/
+
+# OS-filer
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporära filer
+*.tmp
+*.bak
