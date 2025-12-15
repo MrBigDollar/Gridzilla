@@ -16,6 +16,8 @@
 #include "unit\TestNormalizationUtils.mqh"
 #include "unit\TestMarketStateManager.mqh"
 #include "unit\TestEntryEngine.mqh"
+#include "unit\TestPositionManager.mqh"
+#include "unit\TestRiskEngine.mqh"
 
 //--- Input-parametrar
 input bool RUN_ALL_TESTS = true;          // Kör alla tester
@@ -89,6 +91,12 @@ void RunAllTestSuites() {
 
     // Kör EntryEngine-tester (FAS 2)
     RunEntryEngineTests();
+
+    // Kör PositionManager-tester (FAS 3)
+    RunPositionManagerTests();
+
+    // Kör RiskEngine-tester (FAS 3)
+    RunRiskEngineTests();
 
     // Lägg till fler testsviter här efterhand:
     // RunStructuredLoggerTests();
